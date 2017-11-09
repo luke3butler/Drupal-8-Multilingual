@@ -1,0 +1,66 @@
+<?php
+ use Drupal\Core\Url;
+/**
+ * @file
+ * Code for the LanguageSwitcher module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function language_switch_theme($existing, $type, $theme, $path) {
+  $variables = array(
+    'language_switch' => array(
+      'variables' => array(
+        'text_content' => NULL,
+        'languages' => array(),
+      ),
+      'template' => 'language_switch',
+    ),
+  );
+  return $variables;
+}
+
+/**
+ * Template preprocess function for Language Switcher.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - source_text
+ */
+function template_preprocess_language_switch(&$variables) {
+  // Set the current language
+  $variables['current_language'] = \Drupal::languageManager()->getCurrentLanguage()->getId();
+
+  $route_match = \Drupal::routeMatch();
+
+  // If the current route is a node
+  if($node = $route_match->getParameter('node')) {
+    $current_entity = $node;
+  }
+
+  if(isset($current_entity)) {
+    $langs = $current_entity->getTranslationLanguages();
+
+    foreach ($current_entity->getTranslationLanguages() as $langcode => $language) {
+
+      $translation = $current_entity->getTranslation($langcode);
+
+      $variables['languages'][$langcode] = array(
+        'title' => $language->getName(),
+        'link' => $translation->toUrl(),
+      );
+    }
+  }
+
+  // Set the classes for each language link
+  foreach($variables['languages'] as $lang_key => $lang_val) {
+    $variables['languages'][$lang_key]['class'] = ($lang_key === $variables['current_language'] ? 'active ' : '') . $lang_key;
+  }
+
+  // Set cache contexts
+  $variables['#cache']['contexts'][] = 'url';
+  $variables['#cache']['contexts'][] = 'route';
+}
+
+?>

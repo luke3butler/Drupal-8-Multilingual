@@ -1,0 +1,8 @@
+name: Language Switch
+type: module
+description: 'Provides a block to switch the current language.'
+core: 8.x
+package: Language
+# version: VERSION
+dependencies:
+  - block

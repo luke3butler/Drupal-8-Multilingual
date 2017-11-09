@@ -1,0 +1,7 @@
+<div class="language-switcher">
+  <div class="button-group">
+    {% for language in languages %}
+      <a class="button {{ language.class|e }}" href="{{ language.link|e }}">{{ language.title }}</a>
+    {% endfor %}
+  </div>
+</div>
